@@ -35,15 +35,7 @@ export const routes = createBrowserRouter([
             <Home />
           </Suspense>
         ),
-      },
-      {
-        path: "/approve",
-        element: (
-          <Suspense fallback={<div>Loading...</div>}>
-            <Home />
-          </Suspense>
-        ),
-      },
+      }
     ],
   },
   // Add a catch-all route for 404s

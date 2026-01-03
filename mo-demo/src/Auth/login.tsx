@@ -1,12 +1,9 @@
+import LoginUser from "@/components/Auth/LoginUser";
+
 function login() {
   return (
-    <div>
-      <h1>Login</h1>
-      <form action="">
-        <input type="text" />
-        <input type="password" />
-        <button type="submit">Login</button>
-      </form>
+    <div className="flex justify-center items-center h-screen">
+      <LoginUser />
     </div>
   );
 }
