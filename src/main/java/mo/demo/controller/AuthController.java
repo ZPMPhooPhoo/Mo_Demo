@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${cors.allowed-origins:*}")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     

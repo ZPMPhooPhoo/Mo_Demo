@@ -16,6 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
+
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
@@ -39,17 +43,15 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 
                 // USER endpoints
-                .requestMatchers(HttpMethod.POST, "/api/tasks").hasRole("USER")
-                .requestMatchers(HttpMethod.PUT, "/api/tasks/*/submit").hasRole("USER")
-                .requestMatchers(HttpMethod.GET, "/api/tasks/my").hasRole("USER")
+                .requestMatchers(HttpMethod.POST, "/api/tasks").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.PUT, "/api/tasks/*/submit").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.GET, "/api/tasks/my").hasAuthority("ROLE_USER")
                 
                 // APPROVER endpoints
-                .requestMatchers(HttpMethod.GET, "/api/tasks/submitted").hasRole("APPROVER")
-                .requestMatchers(HttpMethod.PUT, "/api/tasks/*/approve").hasRole("APPROVER")
-                .requestMatchers(HttpMethod.PUT, "/api/tasks/*/reject").hasRole("APPROVER")
-                
-                // Admin endpoints
-                // .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/tasks/submitted").hasAuthority("ROLE_APPROVER")
+                .requestMatchers(HttpMethod.PUT, "/api/tasks/*/approve").hasAuthority("ROLE_APPROVER")
+                .requestMatchers(HttpMethod.PUT, "/api/tasks/*/reject").hasAuthority("ROLE_APPROVER")
+            
                 
                 .anyRequest().authenticated()
             )
@@ -75,4 +77,12 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new Hibernate6Module());
+        return mapper;
+    }
+
 }
