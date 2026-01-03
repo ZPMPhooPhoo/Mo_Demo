@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
@@ -29,11 +30,12 @@ public class SecurityConfig {
     
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            .cors(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -41,17 +43,22 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/login", "/register").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 
                 // USER endpoints
                 .requestMatchers(HttpMethod.POST, "/api/tasks").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.POST, "/api/tasks/*/save-draft").hasAuthority("ROLE_USER")
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/submit").hasAuthority("ROLE_USER")
                 .requestMatchers(HttpMethod.GET, "/api/tasks/my").hasAuthority("ROLE_USER")
                 
                 // APPROVER endpoints
-                .requestMatchers(HttpMethod.GET, "/api/tasks/submitted").hasAuthority("ROLE_APPROVER")
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/approve").hasAuthority("ROLE_APPROVER")
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/reject").hasAuthority("ROLE_APPROVER")
-            
+                
+                // General authenticated endpoints
+                .requestMatchers(HttpMethod.GET, "/api/tasks/submitted").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/tasks/*").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/tasks/status/*").authenticated()
                 
                 .anyRequest().authenticated()
             )

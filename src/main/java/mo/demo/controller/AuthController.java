@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${cors.allowed-origins:*}")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     
@@ -54,7 +53,7 @@ public class AuthController {
         response.put("email", savedUser.getEmail());
         response.put("role", savedUser.getRole());
         log.info("User registered: " + savedUser.getEmail() + " with role: " + savedUser.getRole());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(201).body(response);
     }
     
     // Role-All: All authenticated users can login

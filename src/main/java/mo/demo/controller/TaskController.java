@@ -14,7 +14,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${cors.allowed-origins:*}")
 @Slf4j
 public class TaskController {
     
@@ -64,19 +63,19 @@ public class TaskController {
     
     // Role-Approver: Only users with APPROVER role can view submitted tasks
     @PutMapping("/{id}/approve")
-    public ResponseEntity<Task> approveTask(@PathVariable UUID id, Authentication authentication) {
+    public void approveTask(@PathVariable UUID id, Authentication authentication) {
         Task approvedTask = taskService.approveTask(id, authentication.getName());
         log.info("Task approved: {} by user: {}", approvedTask.getId(), authentication.getName());
-        return ResponseEntity.ok(approvedTask);
+        
     }
     
     
     // Role-Approver: Only users with APPROVER role can reject tasks
     @PutMapping("/{id}/reject")
-    public ResponseEntity<Task> rejectTask(@PathVariable UUID id, @RequestBody String rejectionReason, Authentication authentication) {
-        Task rejectedTask = taskService.rejectTask(id, rejectionReason, authentication.getName());
-        log.info("Task rejected: {} by user: {} with reason: {}", rejectedTask.getId(), authentication.getName(), rejectionReason);
-        return ResponseEntity.ok(rejectedTask);
+    public void rejectTask(@PathVariable UUID id, @RequestBody String rejectionReason, Authentication authentication) {
+     taskService.rejectTask(id, rejectionReason, authentication.getName());
+        log.info("Task rejected: {} by user: {} with reason: {}", id, authentication.getName(), rejectionReason);
+        
     }
     
     
