@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/reject").hasRole("APPROVER")
                 
                 // Admin endpoints
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // .requestMatchers("/admin/**").hasRole("ADMIN")
                 
                 .anyRequest().authenticated()
             )

@@ -94,7 +94,7 @@ public class AuthControllerTest {
         user.setId(java.util.UUID.randomUUID());
         user.setEmail("john@example.com");
         user.setName("John Doe");
-        user.setRole("USER");
+        user.setRole("APPROVER");
 
         when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
         when(jwtUtil.generateToken(any())).thenReturn("mock-jwt-token");

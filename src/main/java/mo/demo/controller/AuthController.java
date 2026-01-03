@@ -14,20 +14,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     
+    
+    // Role-All: All authenticated users can register
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User registrationRequest) {
         if (userRepository.existsByEmail(registrationRequest.getEmail())) {
+            
+            log.warn("Registration attempt with existing email: " + registrationRequest.getEmail());
             return ResponseEntity.badRequest().body("Email is already in use");
         }
         
@@ -45,10 +53,11 @@ public class AuthController {
         response.put("userId", savedUser.getId());
         response.put("email", savedUser.getEmail());
         response.put("role", savedUser.getRole());
-        
+        log.info("User registered: " + savedUser.getEmail() + " with role: " + savedUser.getRole());
         return ResponseEntity.ok(response);
     }
     
+    // Role-All: All authenticated users can login
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody Map<String, String> loginRequest) {
         try {
@@ -72,13 +81,15 @@ public class AuthController {
             response.put("email", user.getEmail());
             response.put("name", user.getName());
             response.put("role", user.getRole());
-            
+            log.info("User logged in: " + user.getEmail() + " with role: " + user.getRole());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            log.warn("Login failed for email: " + loginRequest.get("email"), e);
             return ResponseEntity.badRequest().body("Invalid email or password");
         }
     }
     
+    // Role-All: All authenticated users can view their profile
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName())
@@ -91,7 +102,7 @@ public class AuthController {
         response.put("role", user.getRole());
         response.put("status", user.getStatus());
         response.put("createdAt", user.getCreated_at());
-        
+        log.info("User profile retrieved for: " + user.getEmail());
         return ResponseEntity.ok(response);
     }
 }
