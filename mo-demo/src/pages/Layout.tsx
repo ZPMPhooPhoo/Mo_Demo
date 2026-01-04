@@ -1,13 +1,16 @@
 import { Outlet } from "react-router-dom";
-function RootLayout() {
+import { SidebarProvider } from "@/components/ui/sidebar";
+import Header from "@/components/dashboard/Header";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
+
+export default function RootLayout() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="mt-16 flex-1">
+    <SidebarProvider>
+      <AppSidebar />
+      <main className="flex  w-full flex-col h-screen">
+        <Header />
         <Outlet />
       </main>
-      <hr />
-    </div>
-  );
+    </SidebarProvider>
+  )
 }
-
-export default RootLayout;

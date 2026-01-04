@@ -76,7 +76,7 @@ const LoginUser: React.FC<LoginUserProps> = () => {
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full cursor-pointer" onClick={handleSubmit} disabled={isLoading}>
+        <Button type="submit" className="w-full cursor-pointer bg-[#6AB55B]" onClick={handleSubmit} disabled={isLoading}>
            {isLoading ? "Submitting..." : "Submit"}
         </Button>
         <Link to="/login" className="text-center">I am new user <span className="text-blue-500">Go to register!</span></Link>
