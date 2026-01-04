@@ -3,11 +3,20 @@ import { TaskService } from "@/services/TaskService";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface User {
   id: string;
@@ -33,6 +42,12 @@ interface Task {
 
 function UserTaskManagement() {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        title: '',
+        description: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 useEffect(() => {
     const fetchTasks = async () => {
         try {
@@ -54,19 +69,87 @@ useEffect(() => {
     };
     fetchTasks();
 }, [])
-async function handleStatusChange(taskId: string) 
-{
-    await TaskService.submitById(taskId);  
-    location.reload();
-}
+    async function handleStatusChange(taskId: string) {
+        await TaskService.submitById(taskId);
+        location.reload();
+    }
+
+    async function handleCreateTask() {
+        if (!formData.title.trim()) return;
+        
+        setIsSubmitting(true);
+        try {
+            const newTask = await TaskService.createTask(formData.title, formData.description);
+            if (newTask) {
+                setTasks([newTask, ...tasks]);
+                setFormData({ title: '', description: '' });
+                setIsModalOpen(false);
+            }
+        } catch (error) {
+            console.error('Failed to create task:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
   return (
     <div className="w-full h-full p-2">
         <div className="w-full flex justify-between">
-            <h1>User Task Management</h1>
-            <div>
-                <button className="bg-[#6AB55B] text-white px-4 py-2 rounded">Add Task</button>
-            </div>
+            <h1 className="text-xl font-semibold">User Task Management</h1>
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild>
+                    <Button className="bg-[#6AB55B] hover:bg-[#5aa34c] text-white">
+                        Add Task
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Create New Task</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="title" className="text-right">
+                                Title
+                            </Label>
+                            <Input
+                                id="title"
+                                value={formData.title}
+                                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                                className="col-span-3"
+                                placeholder="Enter task title"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-start gap-4">
+                            <Label htmlFor="description" className="text-right pt-2">
+                                Description
+                            </Label>
+                            <Textarea
+                                id="description"
+                                value={formData.description}
+                                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                className="col-span-3 min-h-[100px]"
+                                placeholder="Enter task description"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setIsModalOpen(false)}
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button 
+                            className="bg-[#6AB55B] hover:bg-[#5aa34c]"
+                            onClick={handleCreateTask}
+                            disabled={isSubmitting || !formData.title.trim()}
+                        >
+                            {isSubmitting ? 'Creating...' : 'Create Task'}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
       <div className="w-full h-full mt-2 overflow-auto">
         <table className="w-full border-collapse">
