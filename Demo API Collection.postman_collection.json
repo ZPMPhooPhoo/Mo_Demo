@@ -1,0 +1,1688 @@
+{
+	"info": {
+		"_postman_id": "a3225a82-b4ab-496a-b6e4-8eae7d746ccf",
+		"name": "Demo API Collection",
+		"description": "Postman collection for Demo Spring Boot API with authentication and task management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36535783",
+		"_collection_link": "https://mo6666-0110.postman.co/workspace/7bc60462-9aed-4325-95e4-cda910d53d7b/collection/36535783-a3225a82-b4ab-496a-b6e4-8eae7d746ccf?action=share&source=collection_link&creator=36535783"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User registered successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql(\"User registered successfully\");",
+									"    pm.expect(jsonData.email).to.exist;",
+									"    pm.expect(jsonData.role).to.exist;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"ok@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"USER\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Register User",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\",\n    \"role\": \"USER\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/auth/register",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jan 2026 18:32:35 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"role\": \"USER\",\n    \"message\": \"User registered successfully\",\n    \"userId\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n    \"email\": \"john@example.com\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Login successful\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token).to.exist;",
+									"    pm.expect(jsonData.type).to.eql(\"Bearer\");",
+									"    pm.expect(jsonData.email).to.exist;",
+									"    pm.expect(jsonData.role).to.exist;",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"jwt_token\", jsonData.token);",
+									"    pm.environment.set(\"user_email\", jsonData.email);",
+									"    pm.environment.set(\"user_role\", jsonData.role);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Login User",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jan 2026 18:33:28 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"role\": \"USER\",\n    \"name\": \"John Doe\",\n    \"type\": \"Bearer\",\n    \"userId\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n    \"email\": \"john@example.com\",\n    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwic3ViIjoiam9obkBleGFtcGxlLmNvbSIsImlhdCI6MTc2NzU1MTYwOCwiZXhwIjoxNzY3NjM4MDA4fQ.HFlwvSmSeIFhn8nstuB0UfZ6uHjxQOsamckmgctAh_g\"\n}"
+						}
+					]
+				},
+				{
+					"name": "User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Profile data retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.email).to.exist;",
+									"    pm.expect(jsonData.name).to.exist;",
+									"    pm.expect(jsonData.role).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "User Profile",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/auth/profile",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jan 2026 18:34:05 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"createdAt\": \"2026-01-05T01:02:35.567452900\",\n    \"role\": \"USER\",\n    \"name\": \"John Doe\",\n    \"userId\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n    \"email\": \"john@example.com\",\n    \"status\": \"ACTIVE\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Task Management",
+			"item": [
+				{
+					"name": "User-Task",
+					"item": [
+						{
+							"name": "Create Task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Task created successfully\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.id).to.exist;",
+											"    pm.expect(jsonData.title).to.exist;",
+											"    pm.expect(jsonData.status).to.exist;",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    var jsonData = pm.response.json();",
+											"    pm.environment.set(\"task_id\", jsonData.id);",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Assignment 1\",\n    \"description\": \"This is a sample task description\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/create",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"create"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Create Task",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{jwt_token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"Assignment 1\",\n    \"description\": \"This is a sample task description\"\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/tasks/create",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"create"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Jan 2026 18:35:35 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"62283945-155b-4824-85c6-107301c448e6\",\n    \"title\": \"Assignment 1\",\n    \"description\": \"This is a sample task description\",\n    \"status\": \"DRAFT\",\n    \"createdBy\": {\n        \"id\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n        \"name\": \"John Doe\",\n        \"email\": \"john@example.com\",\n        \"password\": \"$2a$10$CZRzV7xDH9UTD.1U2.t3T.zsSR1Kg3eJVeDNDnSokLybAiNbCR0V2\",\n        \"role\": \"USER\",\n        \"status\": \"ACTIVE\",\n        \"created_at\": \"2026-01-05T01:02:35.567452900\",\n        \"updated_at\": \"2026-01-05T01:02:35.567452900\"\n    },\n    \"approvedBy\": null,\n    \"rejectionReason\": null,\n    \"created_at\": \"2026-01-05T01:05:35.245051\",\n    \"updated_at\": \"2026-01-05T01:05:35.245051\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Submit Task",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/{{task_id}}/submit",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{task_id}}",
+										"submit"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Submit Task",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{jwt_token}}"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/tasks/{{task_id}}/submit",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"{{task_id}}",
+												"submit"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Jan 2026 18:36:11 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"62283945-155b-4824-85c6-107301c448e6\",\n    \"title\": \"Assignment 1\",\n    \"description\": \"This is a sample task description\",\n    \"status\": \"SUBMITTED\",\n    \"createdBy\": {\n        \"id\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n        \"name\": \"John Doe\",\n        \"email\": \"john@example.com\",\n        \"password\": \"$2a$10$CZRzV7xDH9UTD.1U2.t3T.zsSR1Kg3eJVeDNDnSokLybAiNbCR0V2\",\n        \"role\": \"USER\",\n        \"status\": \"ACTIVE\",\n        \"created_at\": \"2026-01-05T01:02:35.567452900\",\n        \"updated_at\": \"2026-01-05T01:02:35.567452900\"\n    },\n    \"approvedBy\": null,\n    \"rejectionReason\": null,\n    \"created_at\": \"2026-01-05T01:05:35.245051\",\n    \"updated_at\": \"2026-01-05T01:06:10.718537900\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Task By User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Tasks retrieved successfully\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an('array');",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/task-by-user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"task-by-user"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Task By User",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{jwt_token}}"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/tasks/task-by-user",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"task-by-user"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Jan 2026 18:36:24 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": \"62283945-155b-4824-85c6-107301c448e6\",\n        \"title\": \"Assignment 1\",\n        \"description\": \"This is a sample task description\",\n        \"status\": \"SUBMITTED\",\n        \"createdBy\": {\n            \"id\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n            \"name\": \"John Doe\",\n            \"email\": \"john@example.com\",\n            \"password\": \"$2a$10$CZRzV7xDH9UTD.1U2.t3T.zsSR1Kg3eJVeDNDnSokLybAiNbCR0V2\",\n            \"role\": \"USER\",\n            \"status\": \"ACTIVE\",\n            \"created_at\": \"2026-01-05T01:02:35.567452900\",\n            \"updated_at\": \"2026-01-05T01:02:35.567452900\"\n        },\n        \"approvedBy\": null,\n        \"rejectionReason\": null,\n        \"created_at\": \"2026-01-05T01:05:35.245051\",\n        \"updated_at\": \"2026-01-05T01:06:10.718537900\"\n    }\n]"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Approver-Task",
+					"item": [
+						{
+							"name": "Approve Task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Task approved successfully\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"APPROVED\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/{{task_id}}/approve",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{task_id}}",
+										"approve"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Approve Task",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{jwt_token}}"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/tasks/{{task_id}}/approve",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"{{task_id}}",
+												"approve"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Jan 2026 18:37:24 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"62283945-155b-4824-85c6-107301c448e6\",\n    \"title\": \"Assignment 1\",\n    \"description\": \"This is a sample task description\",\n    \"status\": \"APPROVED\",\n    \"createdBy\": null,\n    \"approvedBy\": {\n        \"id\": \"7a5585b9-9dcb-4449-bab9-0f2afcbf3543\",\n        \"name\": \"approver\",\n        \"email\": \"admin@gmail.com\",\n        \"password\": \"$2a$10$CqzfEyR.5psXKofblFiC5eezWZHIlXJsuVYMaDampmjcsni.Mx7mW\",\n        \"role\": \"APPROVER\",\n        \"status\": \"ACTIVE\",\n        \"created_at\": \"2026-01-04T12:19:11.391239300\",\n        \"updated_at\": \"2026-01-04T12:19:11.391239300\"\n    },\n    \"rejectionReason\": null,\n    \"created_at\": \"2026-01-05T01:05:35.245051\",\n    \"updated_at\": \"2026-01-05T01:07:24.182995200\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Reject Task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Task rejected successfully\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"REJECTED\");",
+											"    pm.expect(jsonData.rejectionReason).to.exist;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "text/plain"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "Task does not meet requirements"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/{{task_id}}/reject",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{task_id}}",
+										"reject"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Reject Task",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{jwt_token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "text/plain"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "Task does not meet requirements"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/tasks/{{task_id}}/reject",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"{{task_id}}",
+												"reject"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Jan 2026 18:40:09 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"5a2007a4-b8ab-44a5-bfdb-678e7a1385be\",\n    \"title\": \"Assignment 2\",\n    \"description\": \"This is a sample task description\",\n    \"status\": \"REJECTED\",\n    \"createdBy\": null,\n    \"approvedBy\": {\n        \"id\": \"7a5585b9-9dcb-4449-bab9-0f2afcbf3543\",\n        \"name\": \"approver\",\n        \"email\": \"admin@gmail.com\",\n        \"password\": \"$2a$10$CqzfEyR.5psXKofblFiC5eezWZHIlXJsuVYMaDampmjcsni.Mx7mW\",\n        \"role\": \"APPROVER\",\n        \"status\": \"ACTIVE\",\n        \"created_at\": \"2026-01-04T12:19:11.391239300\",\n        \"updated_at\": \"2026-01-04T12:19:11.391239300\"\n    },\n    \"rejectionReason\": \"Task does not meet requirements\",\n    \"created_at\": \"2026-01-05T01:09:40.254623600\",\n    \"updated_at\": \"2026-01-05T01:10:09.144607500\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Draft",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Task saved as draft\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.status).to.eql(\"DRAFT\");",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Draft Task\",\n    \"description\": \"This is a draft task\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/{{task_id}}/draft",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{task_id}}",
+										"draft"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Submitted Tasks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Submitted tasks retrieved\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an('array');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/submitted",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"submitted"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Submitted Tasks",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{jwt_token}}"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/tasks/submitted",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"tasks",
+												"submitted"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Method"
+										},
+										{
+											"key": "Vary",
+											"value": "Access-Control-Request-Headers"
+										},
+										{
+											"key": "X-Content-Type-Options",
+											"value": "nosniff"
+										},
+										{
+											"key": "X-XSS-Protection",
+											"value": "0"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, no-store, max-age=0, must-revalidate"
+										},
+										{
+											"key": "Pragma",
+											"value": "no-cache"
+										},
+										{
+											"key": "Expires",
+											"value": "0"
+										},
+										{
+											"key": "X-Frame-Options",
+											"value": "DENY"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 04 Jan 2026 18:37:53 GMT"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=60"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": \"0ed17b50-8379-49a4-96d6-72dec679c8be\",\n        \"title\": \"Task 1\",\n        \"description\": \"Sample Task 1\",\n        \"status\": \"APPROVED\",\n        \"createdBy\": {\n            \"id\": \"53c96533-a28f-4890-be03-81c93b4ad7c3\",\n            \"name\": \"user\",\n            \"email\": \"user@gmail.com\",\n            \"password\": \"$2a$10$ISDQF3GKcQMoM0XjmGndx.2pszmvfMX5RmzvRTC4yfPpAu89bjMJy\",\n            \"role\": \"USER\",\n            \"status\": \"ACTIVE\",\n            \"created_at\": \"2026-01-04T12:19:34.445381800\",\n            \"updated_at\": \"2026-01-04T12:19:34.445381800\"\n        },\n        \"approvedBy\": null,\n        \"rejectionReason\": null,\n        \"created_at\": \"2026-01-04T12:23:43.524888\",\n        \"updated_at\": \"2026-01-04T21:00:12.395237100\"\n    },\n    {\n        \"id\": \"24f51ca7-d6e1-4206-80ec-452d9c7a6e77\",\n        \"title\": \"Task 2\",\n        \"description\": \"Sample Task 2\",\n        \"status\": \"APPROVED\",\n        \"createdBy\": {\n            \"id\": \"53c96533-a28f-4890-be03-81c93b4ad7c3\",\n            \"name\": \"user\",\n            \"email\": \"user@gmail.com\",\n            \"password\": \"$2a$10$ISDQF3GKcQMoM0XjmGndx.2pszmvfMX5RmzvRTC4yfPpAu89bjMJy\",\n            \"role\": \"USER\",\n            \"status\": \"ACTIVE\",\n            \"created_at\": \"2026-01-04T12:19:34.445381800\",\n            \"updated_at\": \"2026-01-04T12:19:34.445381800\"\n        },\n        \"approvedBy\": null,\n        \"rejectionReason\": null,\n        \"created_at\": \"2026-01-04T12:24:34.114017500\",\n        \"updated_at\": \"2026-01-04T12:26:49.225776700\"\n    },\n    {\n        \"id\": \"537c9649-75e7-4d6d-b1e6-37f139d9e4f6\",\n        \"title\": \"Task 3\",\n        \"description\": \"Sample Task 3\",\n        \"status\": \"REJECTED\",\n        \"createdBy\": {\n            \"id\": \"53c96533-a28f-4890-be03-81c93b4ad7c3\",\n            \"name\": \"user\",\n            \"email\": \"user@gmail.com\",\n            \"password\": \"$2a$10$ISDQF3GKcQMoM0XjmGndx.2pszmvfMX5RmzvRTC4yfPpAu89bjMJy\",\n            \"role\": \"USER\",\n            \"status\": \"ACTIVE\",\n            \"created_at\": \"2026-01-04T12:19:34.445381800\",\n            \"updated_at\": \"2026-01-04T12:19:34.445381800\"\n        },\n        \"approvedBy\": null,\n        \"rejectionReason\": \"ttt\",\n        \"created_at\": \"2026-01-04T12:24:47.793064500\",\n        \"updated_at\": \"2026-01-04T12:26:55.696132200\"\n    },\n    {\n        \"id\": \"62283945-155b-4824-85c6-107301c448e6\",\n        \"title\": \"Assignment 1\",\n        \"description\": \"This is a sample task description\",\n        \"status\": \"APPROVED\",\n        \"createdBy\": {\n            \"id\": \"f02822fd-3c6d-45cc-944e-73df6264613f\",\n            \"name\": \"John Doe\",\n            \"email\": \"john@example.com\",\n            \"password\": \"$2a$10$CZRzV7xDH9UTD.1U2.t3T.zsSR1Kg3eJVeDNDnSokLybAiNbCR0V2\",\n            \"role\": \"USER\",\n            \"status\": \"ACTIVE\",\n            \"created_at\": \"2026-01-05T01:02:35.567452900\",\n            \"updated_at\": \"2026-01-05T01:02:35.567452900\"\n        },\n        \"approvedBy\": null,\n        \"rejectionReason\": null,\n        \"created_at\": \"2026-01-05T01:05:35.245051\",\n        \"updated_at\": \"2026-01-05T01:07:24.182995200\"\n    },\n    {\n        \"id\": \"bb4d0d7b-7e60-408c-991e-0b066b188e21\",\n        \"title\": \"task 02\",\n        \"description\": \"Sample task 02\",\n        \"status\": \"REJECTED\",\n        \"createdBy\": {\n            \"id\": \"2822d710-7e18-47d0-8fea-8393a1ba8411\",\n            \"name\": \"user 2\",\n            \"email\": \"user2@gmail\",\n            \"password\": \"$2a$10$b.Jtu7zpu3g0OrgMG6cv3e5nb7NjqsQ/rF4WYiGXqOI4F0ZkiTyxS\",\n            \"role\": \"USER\",\n            \"status\": \"ACTIVE\",\n            \"created_at\": \"2026-01-04T21:01:23.836693100\",\n            \"updated_at\": \"2026-01-04T21:01:23.836693100\"\n        },\n        \"approvedBy\": null,\n        \"rejectionReason\": \"task is not correct\",\n        \"created_at\": \"2026-01-04T21:02:36.675664500\",\n        \"updated_at\": \"2026-01-04T21:03:58.771021900\"\n    }\n]"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Task by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Task retrieved successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.exist;",
+									"    pm.expect(jsonData.title).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/tasks/{{task_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Task by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/{{task_id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{task_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jan 2026 18:38:29 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"62283945-155b-4824-85c6-107301c448e6\",\n    \"title\": \"Assignment 1\",\n    \"description\": \"This is a sample task description\",\n    \"status\": \"APPROVED\",\n    \"createdBy\": null,\n    \"approvedBy\": null,\n    \"rejectionReason\": null,\n    \"created_at\": \"2026-01-05T01:05:35.245051\",\n    \"updated_at\": \"2026-01-05T01:07:24.182995200\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Tasks by Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Tasks filtered by status\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/tasks/status/DRAFT",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"status",
+								"DRAFT"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Tasks by Status",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/tasks/status/DRAFT",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"status",
+										"DRAFT"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 04 Jan 2026 18:38:42 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"a86ab7bf-92a1-4077-a499-36f09810f438\",\n        \"title\": \"Task 01\",\n        \"description\": \"Sample task 01\",\n        \"status\": \"DRAFT\",\n        \"createdBy\": null,\n        \"approvedBy\": null,\n        \"rejectionReason\": null,\n        \"created_at\": \"2026-01-04T21:02:03.320167500\",\n        \"updated_at\": \"2026-01-04T21:02:03.320167500\"\n    }\n]"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": [
+				{
+					"name": "New Request",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"header": [
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Method"
+						},
+						{
+							"key": "Vary",
+							"value": "Access-Control-Request-Headers"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "8"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 04 Jan 2026 18:38:56 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "Healthy!"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
