@@ -20,4 +20,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     
     @Query("SELECT t FROM Task t WHERE t.createdBy = :user AND t.status = :status")
     List<Task> findByUserAndStatus(@Param("user") User user, @Param("status") Task.TaskStatus status);
+    
+    @Query("SELECT t FROM Task t JOIN FETCH t.createdBy")
+    List<Task> findAllWithCreatedBy();
 }

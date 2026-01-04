@@ -104,4 +104,8 @@ public class TaskService {
     public List<Task> getTasksByStatus(Task.TaskStatus status) {
         return taskDao.findByStatus(status);
     }
+    
+    public List<Task> getAllTasks() {
+        return taskDao.findAllWithCreatedBy();
+    }
 }

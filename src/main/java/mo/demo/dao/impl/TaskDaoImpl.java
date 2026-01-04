@@ -56,4 +56,9 @@ public class TaskDaoImpl implements TaskDao {
     public List<Task> findAll() {
         return taskRepository.findAll();
     }
+    
+    @Override
+    public List<Task> findAllWithCreatedBy() {
+        return taskRepository.findAllWithCreatedBy();
+    }
 }

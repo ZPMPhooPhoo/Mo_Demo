@@ -46,14 +46,15 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 
                 // USER endpoints
-                .requestMatchers(HttpMethod.POST, "/api/tasks").hasAuthority("ROLE_USER")
-                .requestMatchers(HttpMethod.POST, "/api/tasks/*/save-draft").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.POST, "/api/tasks/create").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.POST, "/api/tasks/*/draft").hasAuthority("ROLE_USER")
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/submit").hasAuthority("ROLE_USER")
-                .requestMatchers(HttpMethod.GET, "/api/tasks/my").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.GET, "/api/tasks/task-by-user").hasAuthority("ROLE_USER")
                 
                 // APPROVER endpoints
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/approve").hasAuthority("ROLE_APPROVER")
                 .requestMatchers(HttpMethod.PUT, "/api/tasks/*/reject").hasAuthority("ROLE_APPROVER")
+                .requestMatchers(HttpMethod.PUT, "/api/tasks/all").hasAuthority("ROLE_APPROVER")
                 
                 // General authenticated endpoints
                 .requestMatchers(HttpMethod.GET, "/api/tasks/submitted").authenticated()

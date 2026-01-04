@@ -26,4 +26,6 @@ public interface TaskDao {
     void deleteById(UUID id);
     
     List<Task> findAll();
+    
+    List<Task> findAllWithCreatedBy();
 }

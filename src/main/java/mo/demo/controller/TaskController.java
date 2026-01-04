@@ -21,7 +21,7 @@ public class TaskController {
     
 
     //Role-User: Any authenticated user can create tasks
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Task> createTask(@RequestBody Task task, Authentication authentication) {
         Task createdTask = taskService.createTask(task, authentication.getName());
         log.info("Task created: {} by user: {}", createdTask.getId(), authentication.getName());
@@ -29,7 +29,7 @@ public class TaskController {
     }
     
     // Role-User: Only users with MANAGER role can save drafts
-    @PostMapping("/{id}/save-draft")
+    @PostMapping("/{id}/draft")
     public ResponseEntity<Task> saveAsDraft(@PathVariable UUID id, @RequestBody Task task, Authentication authentication) {
         task.setId(id);
         Task savedTask = taskService.saveAsDraft(task, authentication.getName());
@@ -46,7 +46,7 @@ public class TaskController {
     }
     
     // Role-User: Any authenticated user can view their own tasks
-    @GetMapping("/my")
+    @GetMapping("/task-by-user")
     public ResponseEntity<List<Task>> getMyTasks(Authentication authentication) {
         List<Task> tasks = taskService.getMyTasks(authentication.getName());
         log.info("Retrieved {} tasks for user: {}", tasks.size(), authentication.getName());
@@ -93,6 +93,13 @@ public class TaskController {
     public ResponseEntity<List<Task>> getTasksByStatus(@PathVariable Task.TaskStatus status) {
         List<Task> tasks = taskService.getTasksByStatus(status);
         log.info("Tasks retrieved by status: {} count: {}", status, tasks.size());
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Task>> getAllTasks() {
+        List<Task> tasks = taskService.getAllTasks();
+        log.info("All tasks retrieved: {} count: {}", tasks.size());
         return ResponseEntity.ok(tasks);
     }
 }
