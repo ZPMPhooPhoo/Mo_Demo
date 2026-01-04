@@ -18,6 +18,11 @@ const Register = lazy(() => import("@/Auth/register"));
 const TaskManagement = lazy(() => import("@/pages/Dashboard/TaskManagement"));
 
 export const routes = createBrowserRouter([
+  
+  {
+    path: "/",
+    element: <Navigate to="/login" replace />,
+  },
   {
     path: "/login",
     element: (
