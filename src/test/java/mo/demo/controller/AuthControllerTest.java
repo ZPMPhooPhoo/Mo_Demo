@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,57 +58,66 @@ public class AuthControllerTest {
     @Test
     void testRegisterUser_Success() throws Exception {
         User user = new User();
-        user.setName("John Doe");
-        user.setEmail("john@example.com");
-        user.setPassword("password123");
-        user.setRole("USER");
+        user.setId(java.util.UUID.randomUUID());
+        user.setName("approver");
+        user.setEmail("admin@gmail.com");
+        user.setPassword("123456");
+        user.setRole("APPROVER");
 
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
+        when(userRepository.existsByEmail("admin@gmail.com")).thenReturn(false);
+        when(passwordEncoder.encode("123456")).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value("User registered successfully"))
-                .andExpect(jsonPath("$.email").value("john@example.com"))
-                .andExpect(jsonPath("$.role").value("USER"));
+                .andExpect(jsonPath("$.email").value("admin@gmail.com"))
+                .andExpect(jsonPath("$.role").value("APPROVER"))
+                .andExpect(jsonPath("$.userId").value(user.getId().toString()));
     }
 
     @Test
     void testRegisterUser_EmailAlreadyExists() throws Exception {
         User user = new User();
-        user.setEmail("john@example.com");
+        user.setEmail("admin@gmail.com");
 
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(true);
+        when(userRepository.existsByEmail("admin@gmail.com")).thenReturn(true);
 
         mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Email is already in use"));
+                .andExpect(content().string("Email is already in use."));
     }
 
     @Test
     void testLoginUser_Success() throws Exception {
         User user = new User();
         user.setId(java.util.UUID.randomUUID());
-        user.setEmail("john@example.com");
-        user.setName("John Doe");
+        user.setEmail("admin@gmail.com");
+        user.setName("approver");
         user.setRole("APPROVER");
 
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
-        when(jwtUtil.generateToken(any())).thenReturn("mock-jwt-token");
+        Authentication auth = org.mockito.Mockito.mock(Authentication.class);
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        
+        when(auth.getPrincipal()).thenReturn(userDetails);
+        when(userRepository.findByEmail("admin@gmail.com")).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any())).thenReturn(auth);
+        when(jwtUtil.generateToken(userDetails)).thenReturn("mock-jwt-token");
 
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"john@example.com\",\"password\":\"password123\"}"))
+                .content("{\"email\":\"admin@gmail.com\",\"password\":\"123456\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("mock-jwt-token"))
                 .andExpect(jsonPath("$.type").value("Bearer"))
-                .andExpect(jsonPath("$.email").value("john@example.com"))
-                .andExpect(jsonPath("$.role").value("USER"));
+                .andExpect(jsonPath("$.email").value("admin@gmail.com"))
+                .andExpect(jsonPath("$.name").value("approver"))
+                .andExpect(jsonPath("$.role").value("APPROVER"))
+                .andExpect(jsonPath("$.userId").exists());
     }
 
     @Test
@@ -116,8 +127,8 @@ public class AuthControllerTest {
 
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"john@example.com\",\"password\":\"wrongpassword\"}"))
+                .content("{\"email\":\"admin@gmail.com\",\"password\":\"wrongpassword\"}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Invalid email or password"));
+                .andExpect(content().string("Invalid email or password."));
     }
 }
