@@ -14,6 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +42,10 @@ public class TaskControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
     }
 
     @Test
@@ -53,7 +57,7 @@ public class TaskControllerTest {
 
         when(taskService.createTask(any(Task.class), any())).thenReturn(task);
 
-        mockMvc.perform(post("/api/tasks")
+        mockMvc.perform(post("/api/tasks/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(task)))
                 .andExpect(status().isOk())
@@ -72,7 +76,7 @@ public class TaskControllerTest {
 
         when(taskService.getMyTasks(any())).thenReturn(tasks);
 
-        mockMvc.perform(get("/api/tasks/my"))
+        mockMvc.perform(get("/api/tasks/task-by-user"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -116,7 +120,9 @@ public class TaskControllerTest {
 
         when(taskService.rejectTask(any(UUID.class), any(String.class), any(String.class))).thenReturn(task);
 
-        mockMvc.perform(put("/api/tasks/{id}/reject", UUID.randomUUID()))
+        mockMvc.perform(put("/api/tasks/{id}/reject", UUID.randomUUID())
+                .contentType("text/plain")
+                .content("Test rejection reason"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("REJECTED"));
     }
@@ -140,10 +146,27 @@ public class TaskControllerTest {
         Task task = new Task();
         task.setTitle("Test Task");
 
-        mockMvc.perform(post("/api/tasks")
+        mockMvc.perform(post("/api/tasks/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(task)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = {"APPROVER"})
+    void testGetAllTasks_Success() throws Exception {
+        Task task1 = new Task();
+        task1.setTitle("All Task 1");
+        Task task2 = new Task();
+        task2.setTitle("All Task 2");
+        List<Task> tasks = Arrays.asList(task1, task2);
+
+        when(taskService.getAllTasks()).thenReturn(tasks);
+
+        mockMvc.perform(get("/api/tasks/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
     }
 
     @Test

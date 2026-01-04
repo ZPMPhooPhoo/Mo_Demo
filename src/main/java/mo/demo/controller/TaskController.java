@@ -63,18 +63,18 @@ public class TaskController {
     
     // Role-Approver: Only users with APPROVER role can view submitted tasks
     @PutMapping("/{id}/approve")
-    public void approveTask(@PathVariable UUID id, Authentication authentication) {
+    public ResponseEntity<Task> approveTask(@PathVariable UUID id, Authentication authentication) {
         Task approvedTask = taskService.approveTask(id, authentication.getName());
         log.info("Task approved: {} by user: {}", approvedTask.getId(), authentication.getName());
-        
+        return ResponseEntity.ok(approvedTask);
     }
     
     // Role-Approver: Only users with APPROVER role can reject tasks
     @PutMapping("/{id}/reject")
-    public void rejectTask(@PathVariable UUID id, @RequestBody String rejectionReason, Authentication authentication) {
-     taskService.rejectTask(id, rejectionReason, authentication.getName());
+    public ResponseEntity<Task> rejectTask(@PathVariable UUID id, @RequestBody String rejectionReason, Authentication authentication) {
+     Task rejectedTask = taskService.rejectTask(id, rejectionReason, authentication.getName());
         log.info("Task rejected: {} by user: {} with reason: {}", id, authentication.getName(), rejectionReason);
-        
+        return ResponseEntity.ok(rejectedTask);
     }
     
     // Role-All: All authenticated users can view individual tasks
