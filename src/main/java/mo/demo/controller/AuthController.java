@@ -35,7 +35,7 @@ public class AuthController {
         if (userRepository.existsByEmail(registrationRequest.getEmail())) {
             
             log.warn("Registration attempt with existing email: " + registrationRequest.getEmail());
-            return ResponseEntity.badRequest().body("Email is already in use");
+            return ResponseEntity.badRequest().body("Email is already in use.");
         }
         
         User user = new User();
@@ -71,7 +71,7 @@ public class AuthController {
             String jwt = jwtUtil.generateToken(userDetails);
             
             User user = userRepository.findByEmail(loginRequest.get("email"))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found."));
             
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
@@ -84,7 +84,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.warn("Login failed for email: " + loginRequest.get("email"), e);
-            return ResponseEntity.badRequest().body("Invalid email or password");
+            return ResponseEntity.badRequest().body("Invalid email or password.");
         }
     }
     
@@ -92,12 +92,12 @@ public class AuthController {
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("User not found."));
         
         Map<String, Object> response = new HashMap<>();
         response.put("userId", user.getId());
-        response.put("email", user.getEmail());
         response.put("name", user.getName());
+        response.put("email", user.getEmail());
         response.put("role", user.getRole());
         response.put("status", user.getStatus());
         response.put("createdAt", user.getCreated_at());

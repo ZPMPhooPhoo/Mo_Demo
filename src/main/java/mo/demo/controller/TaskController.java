@@ -69,7 +69,6 @@ public class TaskController {
         
     }
     
-    
     // Role-Approver: Only users with APPROVER role can reject tasks
     @PutMapping("/{id}/reject")
     public void rejectTask(@PathVariable UUID id, @RequestBody String rejectionReason, Authentication authentication) {
@@ -78,7 +77,6 @@ public class TaskController {
         
     }
     
-    
     // Role-All: All authenticated users can view individual tasks
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTask(@PathVariable UUID id) {
@@ -86,7 +84,6 @@ public class TaskController {
         log.info("Task retrieved: {}", task.getId());
         return ResponseEntity.ok(task);
     }
-    
     
     // Role-All: All authenticated users can view tasks by status
     @GetMapping("/status/{status}")
