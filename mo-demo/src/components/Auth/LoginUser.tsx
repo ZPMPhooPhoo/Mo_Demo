@@ -6,16 +6,18 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "@/services/AuthService";
 
-interface LoginUserProps {
-  // No props are being passed to this component
-}
 
-const LoginUser: React.FC<LoginUserProps> = () => {
+
+const LoginUser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const user=JSON.parse(localStorage.getItem("user") || "{}");
+          if(user){
+            navigate("/dashboard");
+          }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
