@@ -51,7 +51,7 @@ const [name, setName] = useState("");
     }
   };
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm border border-[#6AB55B]">
       <CardHeader>
         <CardTitle>Create New User</CardTitle>
       </CardHeader>
@@ -93,7 +93,7 @@ const [name, setName] = useState("");
         </form>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full cursor-pointer bg-[#6AB55B]" onClick={handleSubmit} disabled={isLoading}>
+        <Button type="submit" className="w-full cursor-pointer bg-[#6AB55B] hover:bg-[#6AB55B]" onClick={handleSubmit} disabled={isLoading}>
            {isLoading ? "Submitting..." : "Submit"}
         </Button>
         <Link to="/login" className="text-center">Already have an account? <span className="text-blue-500">Go to Login!</span></Link>
