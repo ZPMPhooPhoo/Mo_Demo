@@ -2,7 +2,7 @@ import axios from "axios";
 
 // In Vite, environment variables are exposed with import.meta.env
 // instead of process.env
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export const api = axios.create({
   baseURL,

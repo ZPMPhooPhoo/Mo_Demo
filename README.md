@@ -1,6 +1,6 @@
 # TaskFlow - Task Approval System
 
-A simple task approval system that demonstrates authentication, role-based authorization, and a basic workflow using Spring Boot.
+A modern task approval system with a React frontend and Spring Boot backend, demonstrating authentication, role-based authorization, and workflow management.
 
 ## Features
 
@@ -18,135 +18,243 @@ DRAFT → SUBMITTED → APPROVED
 
 ## Technology Stack
 
-- **Backend**: Java 21, Spring Boot 4.0.2
-- **Security**: Spring Security with JWT authentication
-- **Database**: MySQL with JPA/Hibernate
-- **Frontend**: Thymeleaf with Bootstrap 5
-- **Build Tool**: Maven
+- **Frontend**:
+  - React 18 with TypeScript
+  - Vite for build tooling
+  - TailwindCSS for styling
+  - React Router for client-side routing
+  - Axios for API requests
+
+- **Backend**:
+  - Java 21
+  - Spring Boot 3.2.0
+  - Spring Security with JWT authentication
+  - Spring Data JPA with Hibernate
+  - Maven for dependency management
+
+- **Database**:
+  - MySQL (hosted on Aiven)
+  - Flyway for database migrations
+
+- **Development Tools**:
+  - Node.js 18+ for frontend development
+  - Java 21 for backend development
+  - Docker (optional for containerization)
 
 ## API Endpoints
 
 ### Authentication
 
 - `POST /api/auth/register` - Register a new user
+
+  ```json
+  {
+    "name": "string",
+    "email": "string",
+    "password": "string",
+    "isApprover": boolean
+  }
+  ```
+
 - `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile
 
-### Task Management (USER role)
+  ```json
+  {
+    "email": "string",
+    "password": "string"
+  }
+  ```
 
+- `GET /api/auth/me` - Get current user profile
+
+### Task Management
+
+- `GET /api/tasks` - Get all tasks (requires authentication)
 - `POST /api/tasks` - Create a new task
-- `POST /api/tasks/{id}/save-draft` - Save task as draft
-- `PUT /api/tasks/{id}/submit` - Submit task for approval
-- `GET /api/tasks/my` - Get current user's tasks
-
-### Task Approval (APPROVER role)
-
-- `GET /api/tasks/submitted` - Get submitted tasks
-- `PUT /api/tasks/{id}/approve` - Approve a task
-- `PUT /api/tasks/{id}/reject` - Reject a task
-
-### General
-
 - `GET /api/tasks/{id}` - Get task by ID
-- `GET /api/tasks/status/{status}` - Get tasks by status
+- `PUT /api/tasks/{id}` - Update a task
+- `DELETE /api/tasks/{id}` - Delete a task
+- `PUT /api/tasks/{id}/submit` - Submit task for approval (USER role)
+- `PUT /api/tasks/{id}/approve` - Approve a task (APPROVER role)
+- `PUT /api/tasks/{id}/reject` - Reject a task (APPROVER role)
 
 ## Database Configuration
 
-The system uses MySQL database. Update the following in `application.properties`:
+The application is pre-configured to use a MySQL database hosted on Aiven. The connection details are set in `src/main/resources/application.yml`:
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/taskflow
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://authorization-demo-mysql-os96.l.aivencloud.com:17470/mo_demo?ssl-mode=REQUIRED
+    username: avnadmin
+    password: AVNS_y7MS8LI4ZQn1F8nnyFK
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 ```
+
+For local development, you can create a local MySQL database and update these values accordingly.
+
+## Prerequisites
+
+- Java 21 JDK
+- Node.js 18+ and npm
+- MySQL client (optional, if not using the provided Aiven database)
 
 ## Running the Application
 
-1. Start MySQL database
-2. Update database configuration in `application.properties`
-3. Run the application:
+### Backend
+
+1. Navigate to the project root directory
+2. Start the Spring Boot application:
    ```bash
    ./mvnw spring-boot:run
    ```
-4. Access the application at `http://localhost:8080`
+   The backend will be available at `http://localhost:8080`
+
+### Frontend
+
+1. Open a new terminal
+2. Navigate to the frontend directory:
+   ```bash
+   cd mo-demo-frontend
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   The frontend will be available at `http://localhost:3000`
+
+### Using the Start Script
+
+Alternatively, you can use the provided script to start both frontend and backend:
+
+```bash
+./script/start.sh
+```
+
+## Environment Variables
+
+The application uses the following environment variables:
+
+### Backend
+
+- `SPRING_DATASOURCE_URL`: JDBC URL for the database
+- `SPRING_DATASOURCE_USERNAME`: Database username
+- `SPRING_DATASOURCE_PASSWORD`: Database password
+- `JWT_SECRET`: Secret key for JWT token generation
+
+### Frontend
+
+- `VITE_API_URL`: Base URL for API requests (default: `http://localhost:8080`)
 
 ## Sample Usage
 
-### Register Users
+### 1. Register a New User
 
 ```bash
-# Register a USER
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
     "email": "john@example.com",
     "password": "password123",
-    "role": "USER"
-  }'
-
-# Register an APPROVER
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Jane Smith",
-    "email": "jane@example.com",
-    "password": "password123",
-    "role": "APPROVER"
+    "isApprover": false
   }'
 ```
 
-### Login and Create Tasks
+### 2. Login and Get JWT Token
 
 ```bash
-# Login
-curl -X POST http://localhost:8080/api/auth/login \
+# Login and save JWT token
+TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "password": "password123"
-  }'
+  -d '{"email":"john@example.com","password":"password123"}' \
+  | jq -r '.token')
 
-# Create task (use JWT token from login)
+echo "Your JWT token: $TOKEN"
+```
+
+### 3. Create a New Task
+
+```bash
 curl -X POST http://localhost:8080/api/tasks \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Sample Task",
-    "description": "This is a sample task for approval"
+    "title": "Complete Project Documentation",
+    "description": "Update all project documentation to reflect recent changes"
   }'
+```
+
+### 4. Submit Task for Approval
+
+```bash
+curl -X PUT http://localhost:8080/api/tasks/1/submit \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### 5. Approve/Reject Task (Approver Only)
+
+```bash
+# Approve
+curl -X PUT http://localhost:8080/api/tasks/1/approve \
+  -H "Authorization: Bearer $TOKEN"
+
+# Reject
+curl -X PUT http://localhost:8080/api/tasks/1/reject \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Incomplete information"}'
 ```
 
 ## Security Features
 
-- JWT-based authentication
-- Role-based access control
-- Password encryption with BCrypt
-- Stateless session management
-- CORS and CSRF protection
+- **JWT-based Authentication**: Secure token-based authentication
+- **Role-based Access Control**: Fine-grained permissions for different user roles
+- **Password Hashing**: BCrypt password encoding
+- **HTTPS**: Secure communication with the database (Aiven MySQL with SSL)
+- **CORS**: Configured for frontend development
+- **Input Validation**: Server-side validation of all inputs
+- **Secure Headers**: Added security headers for web application protection
 
 ## Project Structure
 
 ```
-src/main/java/mo/demo/
-├── config/
-│   └── SecurityConfig.java
-├── controller/
-│   ├── AuthController.java
-│   ├── TaskController.java
-│   └── WebController.java
-├── model/
-│   ├── User.java
-│   └── Task.java
-├── repository/
-│   ├── UserRepository.java
-│   └── TaskRepository.java
-├── security/
-│   ├── JwtUtil.java
-│   └── JwtAuthFilter.java
-└── service/
-    ├── CustomUserDetailsService.java
-    └── TaskService.java
+Mo_Demo/
+├── mo-demo-frontend/          # React frontend
+│   ├── public/                # Static files
+│   ├── src/                   # Source files
+│   │   ├── assets/            # Static assets
+│   │   ├── components/        # React components
+│   │   ├── pages/             # Page components
+│   │   ├── services/          # API services
+│   │   ├── App.tsx            # Main App component
+│   │   └── main.tsx           # Entry point
+│   └── package.json
+│
+├── src/                       # Backend source
+│   ├── main/java/mo/demo/
+│   │   ├── config/           # Configuration classes
+│   │   ├── controller/       # REST controllers
+│   │   ├── model/            # JPA entities
+│   │   ├── repository/       # Data repositories
+│   │   ├── security/         # Security configuration
+│   │   └── service/          # Business logic
+│   └── main/resources/       # Resources
+│       └── application.yml   # Application configuration
+│
+├── script/                   # Utility scripts
+│   └── start.sh             # Start script
+├── .gitignore
+├── pom.xml                  # Maven configuration
+└── README.md
 ```
 
 ## Requirements Met
@@ -159,10 +267,45 @@ src/main/java/mo/demo/
 ✅ State transitions management  
 ✅ Security concepts implementation
 
+## Development
+
+### Frontend Development
+
+```bash
+cd mo-demo-frontend
+npm install
+npm run dev
+```
+
+### Backend Development
+
+```bash
+# Run with Maven wrapper
+./mvnw spring-boot:run
+
+# Run tests
+./mvnw test
+```
+
+### Building for Production
+
+```bash
+# Build frontend
+cd mo-demo-frontend
+npm run build
+
+# Build backend
+cd ..
+./mvnw clean package -DskipTests
+```
+
 ## Future Enhancements
 
-- Email notifications for task approvals/rejections
-- Task comments and attachments
-- Advanced reporting and analytics
-- Multi-tenant support
-- Audit logging
+- [ ] Email notifications for task updates
+- [ ] File attachments for tasks
+- [ ] Real-time updates with WebSocket
+- [ ] User profile management
+- [ ] Task categories and tags
+- [ ] Advanced search and filtering
+- [ ] Audit logging and history
+- [ ] API documentation with Swagger/OpenAPI

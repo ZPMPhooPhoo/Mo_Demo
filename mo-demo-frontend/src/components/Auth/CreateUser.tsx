@@ -20,12 +20,12 @@ const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isApprover, setIsApprover] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    // setError("");
     setIsLoading(true);
     try {
       const response = await register(name, email, password, isApprover);
@@ -38,14 +38,14 @@ const [name, setName] = useState("");
         });
       }else{
         alert("Registration failed. Please try again.");
-        setError("Registration failed. Please try again.");
+        // setError("Registration failed. Please try again.");
       }
     } catch (error: any) {
       alert("Registration failed. Please try again.");
-      setError(
-        error.response?.data?.message || 
-        "Registration failed. Please try again."
-      );
+      // setError(
+      //   error.response?.data?.message || 
+       // "Registration failed. Please try again."
+     // );
     } finally {
       setIsLoading(false);
     }

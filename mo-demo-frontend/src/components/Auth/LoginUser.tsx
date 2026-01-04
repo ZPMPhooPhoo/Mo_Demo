@@ -11,7 +11,7 @@ import { login } from "@/services/AuthService";
 const LoginUser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,10 +24,10 @@ const LoginUser = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    // setError("");
     
     if (!email || !password) {
-      setError("Please enter both email and password");
+      // setError("Please enter both email and password");
       return;
     }
 
@@ -42,14 +42,14 @@ const LoginUser = () => {
           }
         });
       } else {
-        setError("Invalid email or password");
+        // setError("Invalid email or password");
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      setError(
-        error.response?.data?.message || 
-        "An error occurred during login. Please try again."
-      );
+      // setError(
+      //   error.response?.data?.message || 
+      //   "An error occurred during login. Please try again."
+      // );
     } finally {
       setIsLoading(false);
     }

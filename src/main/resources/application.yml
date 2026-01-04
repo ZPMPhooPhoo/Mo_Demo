@@ -2,9 +2,9 @@ spring:
   application:
     name: TaskFlow
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://avnadmin:AVNS_y7MS8LI4ZQn1F8nnyFK@authorization-demo-mysql-os96.l.aivencloud.com:17470/mo_demo?ssl-mode=REQUIRED
+    username: avnadmin
+    password: AVNS_y7MS8LI4ZQn1F8nnyFK
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -16,7 +16,7 @@ spring:
         format_sql: true
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: mySecretKeyForTaskFlowApplication123456789
   expiration: 86400
 
 server:
