@@ -38,7 +38,7 @@ export const TaskService = {
    async getAllTask(){
     try{
         updateAuthToken(JSON.parse(localStorage.getItem("user") || "{}")?.token);
-        const response = await api.get("/api/tasks/all");
+        const response = await api.get("/api/tasks/submitted");
         return response.data;
     }catch(error){
         console.log(error);

@@ -198,8 +198,8 @@ useEffect(() => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem onClick={() => handleStatusChange(task.id)}>Submit</DropdownMenuItem>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => alert("Coming Soon!")}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => alert("Coming Soon!")}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                      </DropdownMenu>
                     

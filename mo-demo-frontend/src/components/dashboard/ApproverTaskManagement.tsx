@@ -1,12 +1,6 @@
 
 import { useEffect, useState } from "react";
 import { TaskService } from "@/services/TaskService";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
 interface User {
@@ -34,6 +28,7 @@ interface Task {
 function ApproverTaskManagement() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<{ [key: string]: 'approve' | 'reject' | null }>({});
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -54,12 +49,16 @@ function ApproverTaskManagement() {
 
   const handleApprove = async (taskId: string) => {
     try {
+      setActionLoading(prev => ({ ...prev, [taskId]: 'approve' }));
       await TaskService.approveTask(taskId);
       // Refresh tasks after approval
       const updatedTasks = await TaskService.getAllTask();
       setTasks(Array.isArray(updatedTasks) ? updatedTasks : []);
     } catch (error) {
       console.error('Failed to approve task:', error);
+      alert('Failed to approve task. Please try again.');
+    } finally {
+      setActionLoading(prev => ({ ...prev, [taskId]: null }));
     }
   };
 
@@ -67,12 +66,16 @@ function ApproverTaskManagement() {
     const reason = prompt('Please enter rejection reason:');
     if (reason) {
       try {
+        setActionLoading(prev => ({ ...prev, [taskId]: 'reject' }));
         await TaskService.rejectTask(taskId, reason);
         // Refresh tasks after rejection
         const updatedTasks = await TaskService.getAllTask();
         setTasks(Array.isArray(updatedTasks) ? updatedTasks : []);
       } catch (error) {
         console.error('Failed to reject task:', error);
+        alert('Failed to reject task. Please try again.');
+      } finally {
+        setActionLoading(prev => ({ ...prev, [taskId]: null }));
       }
     }
   };
@@ -98,8 +101,8 @@ function ApproverTaskManagement() {
             </tr>
           </thead>
           <tbody>
-            {tasks.length > 0 ? (
-              tasks.map((task, index) => (
+            {tasks.filter(task => task.status !== 'DRAFT').length > 0 ? (
+              tasks.filter(task => task.status !== 'DRAFT').map((task, index) => (
                 <tr key={task.id} className="hover:bg-gray-50">
                   <td className="px-4 py-2 border">{index + 1}</td>
                   <td className="px-4 py-2 border font-medium">{task.title}</td>
@@ -139,39 +142,26 @@ function ApproverTaskManagement() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-8 text-xs"
+                            className="h-8 text-xs cursor-pointer bg-green-500 text-white hover:border hover:border-green-500"
                             onClick={() => handleApprove(task.id)}
+                            disabled={actionLoading[task.id] === 'approve' || actionLoading[task.id] === 'reject'}
                           >
-                            Approve
+                            {actionLoading[task.id] === 'approve' ? 'Approving...' : 'Approve'}
                           </Button>
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="h-8 text-xs"
+                            className="h-8 text-xs cursor-pointer bg-red-500 text-white hover:border hover:border-red-500"
                             onClick={() => handleReject(task.id)}
+                            disabled={actionLoading[task.id] === 'approve' || actionLoading[task.id] === 'reject'}
                           >
-                            Reject
+                            {actionLoading[task.id] === 'reject' ? 'Rejecting...' : 'Reject'}
                           </Button>
                         </div>
                       ) : (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                              </svg>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleApprove(task.id)}>
-                              Approve
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleReject(task.id)}>
-                              Reject
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <span className="px-2 py-1 text-xs rounded-full whitespace-nowrap bg-gray-100 text-gray-800">
+                          {task.status}
+                        </span>
                       )}
                     </div>
                   </td>
@@ -191,4 +181,4 @@ function ApproverTaskManagement() {
   );
 }
 
-export default ApproverTaskManagement
+export default ApproverTaskManagement;

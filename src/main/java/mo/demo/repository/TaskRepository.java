@@ -15,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     List<Task> findByCreatedBy(User createdBy);
     List<Task> findByStatus(Task.TaskStatus status);
     
-    @Query("SELECT t FROM Task t WHERE t.status IN ('SUBMITTED', 'APPROVED', 'REJECTED')")
+    @Query("SELECT t FROM Task t JOIN FETCH t.createdBy WHERE t.status IN ('SUBMITTED', 'APPROVED', 'REJECTED')")
     List<Task> findSubmittedTasks();
     
     @Query("SELECT t FROM Task t WHERE t.createdBy = :user AND t.status = :status")
