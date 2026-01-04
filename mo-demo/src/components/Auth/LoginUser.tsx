@@ -70,7 +70,7 @@ const LoginUser: React.FC<LoginUserProps> = () => {
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required maxLength={8} minLength={8} value={password} onChange={(e) => setPassword(e.target.value)}/>
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)}/>
             </div>
           </div>
         </form>

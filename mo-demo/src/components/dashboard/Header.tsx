@@ -47,7 +47,7 @@ function Header() {
   };
 
   return (
-    <div className="w-full h-15 bg-[#6AB55B] flex items-center px-4 justify-between">
+    <div className="w-full h-15 bg-[#6AB55B] flex items-center px-4 justify-between sticky top-0">
       <SidebarTrigger className="text-white" />
       <div>
         <DropdownMenu>

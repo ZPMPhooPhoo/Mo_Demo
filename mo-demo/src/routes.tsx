@@ -4,7 +4,7 @@ import RootLayout from "@/pages/Layout";
 import Error404 from "@/pages/error";
 const Login = lazy(() => import("@/Auth/login"));
 const Register = lazy(() => import("@/Auth/register"));
-const Home = lazy(() => import("@/pages/Dashboard/home"));
+const TaskManagement = lazy(() => import("@/pages/Dashboard/TaskManagement"));
 
 export const routes = createBrowserRouter([
   {
@@ -32,7 +32,7 @@ export const routes = createBrowserRouter([
         index: true,
         element: (
           <Suspense fallback={<div>Loading...</div>}>
-            <Home />
+            <TaskManagement />
           </Suspense>
         ),
       }

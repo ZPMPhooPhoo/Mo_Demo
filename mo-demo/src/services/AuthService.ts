@@ -41,7 +41,6 @@ export const getProfile = async (): Promise<ProfileResponse | null> => {
   try {
    updateAuthToken(JSON.parse(localStorage.getItem("user") || "{}")?.token);
     const response = await api.get<ProfileResponse>("/api/auth/profile");
-    console.log("Profile",response);
     return response.data;
   } catch (error) {
     console.error("Error fetching profile:", error);
