@@ -19,27 +19,27 @@ DRAFT → SUBMITTED → APPROVED
 ## Technology Stack
 
 - **Frontend**:
-  - React 18 with TypeScript
+  - React 19 with TypeScript
   - Vite for build tooling
   - TailwindCSS for styling
+  - Shadcn Ui
   - React Router for client-side routing
   - Axios for API requests
-
+    
 - **Backend**:
   - Java 21
   - Spring Boot 3.2.0
   - Spring Security with JWT authentication
   - Spring Data JPA with Hibernate
   - Maven for dependency management
-
+ 
 - **Database**:
   - MySQL (hosted on Aiven)
   - Flyway for database migrations
 
 - **Development Tools**:
-  - Node.js 18+ for frontend development
+  - Node.js 24 for frontend development
   - Java 21 for backend development
-  - Docker (optional for containerization)
 
 ## API Endpoints
 
@@ -52,7 +52,7 @@ DRAFT → SUBMITTED → APPROVED
     "name": "string",
     "email": "string",
     "password": "string",
-    "isApprover": boolean
+    "role": "APPROVER" //Default "USER"
   }
   ```
 
@@ -65,18 +65,17 @@ DRAFT → SUBMITTED → APPROVED
   }
   ```
 
-- `GET /api/auth/me` - Get current user profile
+- `GET /api/auth/profile` - Get current user profile
 
 ### Task Management
 
-- `GET /api/tasks` - Get all tasks (requires authentication)
-- `POST /api/tasks` - Create a new task
+- `GET /api/tasks/all` - Get all tasks (requires authentication)
+- `POST /api/tasks/create` - Create a new task
 - `GET /api/tasks/{id}` - Get task by ID
-- `PUT /api/tasks/{id}` - Update a task
-- `DELETE /api/tasks/{id}` - Delete a task
 - `PUT /api/tasks/{id}/submit` - Submit task for approval (USER role)
 - `PUT /api/tasks/{id}/approve` - Approve a task (APPROVER role)
 - `PUT /api/tasks/{id}/reject` - Reject a task (APPROVER role)
+- `GET /api/tasks/submitted` - Submitted tasks only (APPROVER role)
 
 ## Database Configuration
 
@@ -129,15 +128,7 @@ For local development, you can create a local MySQL database and update these va
    ```bash
    npm run dev
    ```
-   The frontend will be available at `http://localhost:3000`
-
-### Using the Start Script
-
-Alternatively, you can use the provided script to start both frontend and backend:
-
-```bash
-./script/start.sh
-```
+   The frontend will be available at `http://localhost:5173/login`
 
 ## Environment Variables
 
@@ -250,8 +241,6 @@ Mo_Demo/
 │   └── main/resources/       # Resources
 │       └── application.yml   # Application configuration
 │
-├── script/                   # Utility scripts
-│   └── start.sh             # Start script
 ├── .gitignore
 ├── pom.xml                  # Maven configuration
 └── README.md
@@ -299,13 +288,4 @@ cd ..
 ./mvnw clean package -DskipTests
 ```
 
-## Future Enhancements
-
-- [ ] Email notifications for task updates
-- [ ] File attachments for tasks
-- [ ] Real-time updates with WebSocket
-- [ ] User profile management
-- [ ] Task categories and tags
-- [ ] Advanced search and filtering
-- [ ] Audit logging and history
-- [ ] API documentation with Swagger/OpenAPI
+#### The API tests are included in a Postman collection.The Postman collection already contains test scripts.
